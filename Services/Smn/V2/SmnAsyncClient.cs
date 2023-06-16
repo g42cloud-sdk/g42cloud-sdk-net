@@ -46,6 +46,16 @@ namespace G42Cloud.SDK.Smn.V2
             return JsonUtils.DeSerialize<CancelSubscriptionResponse>(response);
         }
         
+        public async Task<CreateLogtankResponse> CreateLogtankAsync(CreateLogtankRequest createLogtankRequest)
+        {
+            Dictionary<string, string> urlParam = new Dictionary<string, string>();
+            urlParam.Add("topic_urn" , createLogtankRequest.TopicUrn.ToString());
+            string urlPath = HttpUtils.AddUrlPath("/v2/{project_id}/notifications/topics/{topic_urn}/logtanks",urlParam);
+            SdkRequest request = HttpUtils.InitSdkRequest(urlPath, "application/json;charset=UTF-8", createLogtankRequest);
+            HttpResponseMessage response = await DoHttpRequestAsync("POST",request);
+            return JsonUtils.DeSerialize<CreateLogtankResponse>(response);
+        }
+        
         public async Task<CreateMessageTemplateResponse> CreateMessageTemplateAsync(CreateMessageTemplateRequest createMessageTemplateRequest)
         {
             Dictionary<string, string> urlParam = new Dictionary<string, string>();
@@ -73,6 +83,17 @@ namespace G42Cloud.SDK.Smn.V2
             SdkRequest request = HttpUtils.InitSdkRequest(urlPath, "application/json;charset=UTF-8", createTopicRequest);
             HttpResponseMessage response = await DoHttpRequestAsync("POST",request);
             return JsonUtils.DeSerialize<CreateTopicResponse>(response);
+        }
+        
+        public async Task<DeleteLogtankResponse> DeleteLogtankAsync(DeleteLogtankRequest deleteLogtankRequest)
+        {
+            Dictionary<string, string> urlParam = new Dictionary<string, string>();
+            urlParam.Add("topic_urn" , deleteLogtankRequest.TopicUrn.ToString());
+            urlParam.Add("logtank_id" , deleteLogtankRequest.LogtankId.ToString());
+            string urlPath = HttpUtils.AddUrlPath("/v2/{project_id}/notifications/topics/{topic_urn}/logtanks/{logtank_id}",urlParam);
+            SdkRequest request = HttpUtils.InitSdkRequest(urlPath, "application/json", deleteLogtankRequest);
+            HttpResponseMessage response = await DoHttpRequestAsync("DELETE",request);
+            return JsonUtils.DeSerialize<DeleteLogtankResponse>(response);
         }
         
         public async Task<DeleteMessageTemplateResponse> DeleteMessageTemplateAsync(DeleteMessageTemplateRequest deleteMessageTemplateRequest)
@@ -126,6 +147,16 @@ namespace G42Cloud.SDK.Smn.V2
             SdkRequest request = HttpUtils.InitSdkRequest(urlPath, "application/json", deleteTopicAttributesRequest);
             HttpResponseMessage response = await DoHttpRequestAsync("DELETE",request);
             return JsonUtils.DeSerialize<DeleteTopicAttributesResponse>(response);
+        }
+        
+        public async Task<ListLogtankResponse> ListLogtankAsync(ListLogtankRequest listLogtankRequest)
+        {
+            Dictionary<string, string> urlParam = new Dictionary<string, string>();
+            urlParam.Add("topic_urn" , listLogtankRequest.TopicUrn.ToString());
+            string urlPath = HttpUtils.AddUrlPath("/v2/{project_id}/notifications/topics/{topic_urn}/logtanks",urlParam);
+            SdkRequest request = HttpUtils.InitSdkRequest(urlPath, "application/json", listLogtankRequest);
+            HttpResponseMessage response = await DoHttpRequestAsync("GET",request);
+            return JsonUtils.DeSerialize<ListLogtankResponse>(response);
         }
         
         public async Task<ListMessageTemplateDetailsResponse> ListMessageTemplateDetailsAsync(ListMessageTemplateDetailsRequest listMessageTemplateDetailsRequest)
@@ -229,8 +260,7 @@ namespace G42Cloud.SDK.Smn.V2
         public async Task<ListVersionResponse> ListVersionAsync(ListVersionRequest listVersionRequest)
         {
             Dictionary<string, string> urlParam = new Dictionary<string, string>();
-            urlParam.Add("api_version" , listVersionRequest.ApiVersion.ToString());
-            string urlPath = HttpUtils.AddUrlPath("/{api_version}",urlParam);
+            string urlPath = HttpUtils.AddUrlPath("/v2",urlParam);
             SdkRequest request = HttpUtils.InitSdkRequest(urlPath, "application/json", listVersionRequest);
             HttpResponseMessage response = await DoHttpRequestAsync("GET",request);
             return JsonUtils.DeSerialize<ListVersionResponse>(response);
@@ -255,6 +285,17 @@ namespace G42Cloud.SDK.Smn.V2
             return JsonUtils.DeSerialize<PublishMessageResponse>(response);
         }
         
+        public async Task<UpdateLogtankResponse> UpdateLogtankAsync(UpdateLogtankRequest updateLogtankRequest)
+        {
+            Dictionary<string, string> urlParam = new Dictionary<string, string>();
+            urlParam.Add("topic_urn" , updateLogtankRequest.TopicUrn.ToString());
+            urlParam.Add("logtank_id" , updateLogtankRequest.LogtankId.ToString());
+            string urlPath = HttpUtils.AddUrlPath("/v2/{project_id}/notifications/topics/{topic_urn}/logtanks/{logtank_id}",urlParam);
+            SdkRequest request = HttpUtils.InitSdkRequest(urlPath, "application/json;charset=UTF-8", updateLogtankRequest);
+            HttpResponseMessage response = await DoHttpRequestAsync("PUT",request);
+            return JsonUtils.DeSerialize<UpdateLogtankResponse>(response);
+        }
+        
         public async Task<UpdateMessageTemplateResponse> UpdateMessageTemplateAsync(UpdateMessageTemplateRequest updateMessageTemplateRequest)
         {
             Dictionary<string, string> urlParam = new Dictionary<string, string>();
@@ -263,6 +304,17 @@ namespace G42Cloud.SDK.Smn.V2
             SdkRequest request = HttpUtils.InitSdkRequest(urlPath, "application/json;charset=UTF-8", updateMessageTemplateRequest);
             HttpResponseMessage response = await DoHttpRequestAsync("PUT",request);
             return JsonUtils.DeSerialize<UpdateMessageTemplateResponse>(response);
+        }
+        
+        public async Task<UpdateSubscriptionResponse> UpdateSubscriptionAsync(UpdateSubscriptionRequest updateSubscriptionRequest)
+        {
+            Dictionary<string, string> urlParam = new Dictionary<string, string>();
+            urlParam.Add("topic_urn" , updateSubscriptionRequest.TopicUrn.ToString());
+            urlParam.Add("subscription_urn" , updateSubscriptionRequest.SubscriptionUrn.ToString());
+            string urlPath = HttpUtils.AddUrlPath("/v2/{project_id}/notifications/topics/{topic_urn}/subscriptions/{subscription_urn}",urlParam);
+            SdkRequest request = HttpUtils.InitSdkRequest(urlPath, "application/json;charset=UTF-8", updateSubscriptionRequest);
+            HttpResponseMessage response = await DoHttpRequestAsync("PUT",request);
+            return JsonUtils.DeSerialize<UpdateSubscriptionResponse>(response);
         }
         
         public async Task<UpdateTopicResponse> UpdateTopicAsync(UpdateTopicRequest updateTopicRequest)

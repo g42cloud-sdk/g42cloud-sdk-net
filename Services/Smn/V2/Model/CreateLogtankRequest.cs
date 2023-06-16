@@ -11,16 +11,18 @@ using G42Cloud.SDK.Core;
 namespace G42Cloud.SDK.Smn.V2.Model
 {
     /// <summary>
-    /// 
+    /// Request Object
     /// </summary>
-    public class TopicAttribute 
+    public class CreateLogtankRequest 
     {
 
-        [JsonProperty("access_policy", NullValueHandling = NullValueHandling.Ignore)]
-        public AccessPolicy AccessPolicy { get; set; }
+        [SDKProperty("topic_urn", IsPath = true)]
+        [JsonProperty("topic_urn", NullValueHandling = NullValueHandling.Ignore)]
+        public string TopicUrn { get; set; }
 
-        [JsonProperty("introduction", NullValueHandling = NullValueHandling.Ignore)]
-        public string Introduction { get; set; }
+        [SDKProperty("body", IsBody = true)]
+        [JsonProperty("body", NullValueHandling = NullValueHandling.Ignore)]
+        public CreateLogtankRequestBody Body { get; set; }
 
 
 
@@ -30,9 +32,9 @@ namespace G42Cloud.SDK.Smn.V2.Model
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.Append("class TopicAttribute {\n");
-            sb.Append("  accessPolicy: ").Append(AccessPolicy).Append("\n");
-            sb.Append("  introduction: ").Append(Introduction).Append("\n");
+            sb.Append("class CreateLogtankRequest {\n");
+            sb.Append("  topicUrn: ").Append(TopicUrn).Append("\n");
+            sb.Append("  body: ").Append(Body).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -42,27 +44,27 @@ namespace G42Cloud.SDK.Smn.V2.Model
         /// </summary>
         public override bool Equals(object input)
         {
-            return this.Equals(input as TopicAttribute);
+            return this.Equals(input as CreateLogtankRequest);
         }
 
         /// <summary>
         /// Returns true if objects are equal
         /// </summary>
-        public bool Equals(TopicAttribute input)
+        public bool Equals(CreateLogtankRequest input)
         {
             if (input == null)
                 return false;
 
             return 
                 (
-                    this.AccessPolicy == input.AccessPolicy ||
-                    (this.AccessPolicy != null &&
-                    this.AccessPolicy.Equals(input.AccessPolicy))
+                    this.TopicUrn == input.TopicUrn ||
+                    (this.TopicUrn != null &&
+                    this.TopicUrn.Equals(input.TopicUrn))
                 ) && 
                 (
-                    this.Introduction == input.Introduction ||
-                    (this.Introduction != null &&
-                    this.Introduction.Equals(input.Introduction))
+                    this.Body == input.Body ||
+                    (this.Body != null &&
+                    this.Body.Equals(input.Body))
                 );
         }
 
@@ -74,10 +76,10 @@ namespace G42Cloud.SDK.Smn.V2.Model
             unchecked // Overflow is fine, just wrap
             {
                 int hashCode = 41;
-                if (this.AccessPolicy != null)
-                    hashCode = hashCode * 59 + this.AccessPolicy.GetHashCode();
-                if (this.Introduction != null)
-                    hashCode = hashCode * 59 + this.Introduction.GetHashCode();
+                if (this.TopicUrn != null)
+                    hashCode = hashCode * 59 + this.TopicUrn.GetHashCode();
+                if (this.Body != null)
+                    hashCode = hashCode * 59 + this.Body.GetHashCode();
                 return hashCode;
             }
         }

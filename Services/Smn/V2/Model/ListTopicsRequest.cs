@@ -36,6 +36,10 @@ namespace G42Cloud.SDK.Smn.V2.Model
         [JsonProperty("fuzzy_name", NullValueHandling = NullValueHandling.Ignore)]
         public string FuzzyName { get; set; }
 
+        [SDKProperty("topic_id", IsQuery = true)]
+        [JsonProperty("topic_id", NullValueHandling = NullValueHandling.Ignore)]
+        public string TopicId { get; set; }
+
 
 
         /// <summary>
@@ -50,6 +54,7 @@ namespace G42Cloud.SDK.Smn.V2.Model
             sb.Append("  enterpriseProjectId: ").Append(EnterpriseProjectId).Append("\n");
             sb.Append("  name: ").Append(Name).Append("\n");
             sb.Append("  fuzzyName: ").Append(FuzzyName).Append("\n");
+            sb.Append("  topicId: ").Append(TopicId).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -95,6 +100,11 @@ namespace G42Cloud.SDK.Smn.V2.Model
                     this.FuzzyName == input.FuzzyName ||
                     (this.FuzzyName != null &&
                     this.FuzzyName.Equals(input.FuzzyName))
+                ) && 
+                (
+                    this.TopicId == input.TopicId ||
+                    (this.TopicId != null &&
+                    this.TopicId.Equals(input.TopicId))
                 );
         }
 
@@ -116,6 +126,8 @@ namespace G42Cloud.SDK.Smn.V2.Model
                     hashCode = hashCode * 59 + this.Name.GetHashCode();
                 if (this.FuzzyName != null)
                     hashCode = hashCode * 59 + this.FuzzyName.GetHashCode();
+                if (this.TopicId != null)
+                    hashCode = hashCode * 59 + this.TopicId.GetHashCode();
                 return hashCode;
             }
         }

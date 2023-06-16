@@ -17,7 +17,7 @@ namespace G42Cloud.SDK.Smn.V2.Model
     {
 
         [JsonProperty("tag", NullValueHandling = NullValueHandling.Ignore)]
-        public CreateResourceTagRequestBodyTag Tag { get; set; }
+        public ResourceTag Tag { get; set; }
 
 
 

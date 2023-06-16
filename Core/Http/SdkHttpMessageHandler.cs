@@ -40,6 +40,7 @@ namespace G42Cloud.SDK.Core
         {
             var handler = new HttpClientHandler
             {
+                AllowAutoRedirect = _httpConfig.AllowRedirects,
                 ClientCertificateOptions = ClientCertificateOption.Manual,
                 ServerCertificateCustomValidationCallback =
                     (httpRequestMessage, cert, cetChain, policyErrors) =>

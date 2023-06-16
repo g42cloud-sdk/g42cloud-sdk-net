@@ -290,6 +290,9 @@ namespace G42Cloud.SDK.Ecs.V2.Model
         [JsonProperty("data_image_id", NullValueHandling = NullValueHandling.Ignore)]
         public string DataImageId { get; set; }
 
+        [JsonProperty("delete_on_termination", NullValueHandling = NullValueHandling.Ignore)]
+        public bool? DeleteOnTermination { get; set; }
+
 
 
         /// <summary>
@@ -309,6 +312,7 @@ namespace G42Cloud.SDK.Ecs.V2.Model
             sb.Append("  clusterId: ").Append(ClusterId).Append("\n");
             sb.Append("  metadata: ").Append(Metadata).Append("\n");
             sb.Append("  dataImageId: ").Append(DataImageId).Append("\n");
+            sb.Append("  deleteOnTermination: ").Append(DeleteOnTermination).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -379,6 +383,11 @@ namespace G42Cloud.SDK.Ecs.V2.Model
                     this.DataImageId == input.DataImageId ||
                     (this.DataImageId != null &&
                     this.DataImageId.Equals(input.DataImageId))
+                ) && 
+                (
+                    this.DeleteOnTermination == input.DeleteOnTermination ||
+                    (this.DeleteOnTermination != null &&
+                    this.DeleteOnTermination.Equals(input.DeleteOnTermination))
                 );
         }
 
@@ -410,6 +419,8 @@ namespace G42Cloud.SDK.Ecs.V2.Model
                     hashCode = hashCode * 59 + this.Metadata.GetHashCode();
                 if (this.DataImageId != null)
                     hashCode = hashCode * 59 + this.DataImageId.GetHashCode();
+                if (this.DeleteOnTermination != null)
+                    hashCode = hashCode * 59 + this.DeleteOnTermination.GetHashCode();
                 return hashCode;
             }
         }

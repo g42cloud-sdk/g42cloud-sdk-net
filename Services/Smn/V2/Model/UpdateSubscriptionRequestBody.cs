@@ -11,13 +11,13 @@ using G42Cloud.SDK.Core;
 namespace G42Cloud.SDK.Smn.V2.Model
 {
     /// <summary>
-    /// Response Object
+    /// 
     /// </summary>
-    public class ListVersionResponse : SdkResponse
+    public class UpdateSubscriptionRequestBody 
     {
 
-        [JsonProperty("version", NullValueHandling = NullValueHandling.Ignore)]
-        public VersionItem Version { get; set; }
+        [JsonProperty("remark", NullValueHandling = NullValueHandling.Ignore)]
+        public string Remark { get; set; }
 
 
 
@@ -27,8 +27,8 @@ namespace G42Cloud.SDK.Smn.V2.Model
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.Append("class ListVersionResponse {\n");
-            sb.Append("  version: ").Append(Version).Append("\n");
+            sb.Append("class UpdateSubscriptionRequestBody {\n");
+            sb.Append("  remark: ").Append(Remark).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -38,22 +38,22 @@ namespace G42Cloud.SDK.Smn.V2.Model
         /// </summary>
         public override bool Equals(object input)
         {
-            return this.Equals(input as ListVersionResponse);
+            return this.Equals(input as UpdateSubscriptionRequestBody);
         }
 
         /// <summary>
         /// Returns true if objects are equal
         /// </summary>
-        public bool Equals(ListVersionResponse input)
+        public bool Equals(UpdateSubscriptionRequestBody input)
         {
             if (input == null)
                 return false;
 
             return 
                 (
-                    this.Version == input.Version ||
-                    (this.Version != null &&
-                    this.Version.Equals(input.Version))
+                    this.Remark == input.Remark ||
+                    (this.Remark != null &&
+                    this.Remark.Equals(input.Remark))
                 );
         }
 
@@ -65,8 +65,8 @@ namespace G42Cloud.SDK.Smn.V2.Model
             unchecked // Overflow is fine, just wrap
             {
                 int hashCode = 41;
-                if (this.Version != null)
-                    hashCode = hashCode * 59 + this.Version.GetHashCode();
+                if (this.Remark != null)
+                    hashCode = hashCode * 59 + this.Remark.GetHashCode();
                 return hashCode;
             }
         }

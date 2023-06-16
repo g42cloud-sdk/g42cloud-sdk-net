@@ -11,13 +11,19 @@ using G42Cloud.SDK.Core;
 namespace G42Cloud.SDK.Smn.V2.Model
 {
     /// <summary>
-    /// Response Object
+    /// 
     /// </summary>
-    public class ListVersionResponse : SdkResponse
+    public class AccessPolicy 
     {
 
-        [JsonProperty("version", NullValueHandling = NullValueHandling.Ignore)]
-        public VersionItem Version { get; set; }
+        [JsonProperty("Version", NullValueHandling = NullValueHandling.Ignore)]
+        public string Version { get; set; }
+
+        [JsonProperty("Id", NullValueHandling = NullValueHandling.Ignore)]
+        public string Id { get; set; }
+
+        [JsonProperty("Statement", NullValueHandling = NullValueHandling.Ignore)]
+        public List<Statement> Statement { get; set; }
 
 
 
@@ -27,8 +33,10 @@ namespace G42Cloud.SDK.Smn.V2.Model
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.Append("class ListVersionResponse {\n");
+            sb.Append("class AccessPolicy {\n");
             sb.Append("  version: ").Append(Version).Append("\n");
+            sb.Append("  id: ").Append(Id).Append("\n");
+            sb.Append("  statement: ").Append(Statement).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -38,13 +46,13 @@ namespace G42Cloud.SDK.Smn.V2.Model
         /// </summary>
         public override bool Equals(object input)
         {
-            return this.Equals(input as ListVersionResponse);
+            return this.Equals(input as AccessPolicy);
         }
 
         /// <summary>
         /// Returns true if objects are equal
         /// </summary>
-        public bool Equals(ListVersionResponse input)
+        public bool Equals(AccessPolicy input)
         {
             if (input == null)
                 return false;
@@ -54,6 +62,17 @@ namespace G42Cloud.SDK.Smn.V2.Model
                     this.Version == input.Version ||
                     (this.Version != null &&
                     this.Version.Equals(input.Version))
+                ) && 
+                (
+                    this.Id == input.Id ||
+                    (this.Id != null &&
+                    this.Id.Equals(input.Id))
+                ) && 
+                (
+                    this.Statement == input.Statement ||
+                    this.Statement != null &&
+                    input.Statement != null &&
+                    this.Statement.SequenceEqual(input.Statement)
                 );
         }
 
@@ -67,6 +86,10 @@ namespace G42Cloud.SDK.Smn.V2.Model
                 int hashCode = 41;
                 if (this.Version != null)
                     hashCode = hashCode * 59 + this.Version.GetHashCode();
+                if (this.Id != null)
+                    hashCode = hashCode * 59 + this.Id.GetHashCode();
+                if (this.Statement != null)
+                    hashCode = hashCode * 59 + this.Statement.GetHashCode();
                 return hashCode;
             }
         }

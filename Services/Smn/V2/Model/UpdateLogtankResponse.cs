@@ -13,11 +13,14 @@ namespace G42Cloud.SDK.Smn.V2.Model
     /// <summary>
     /// Response Object
     /// </summary>
-    public class ListVersionResponse : SdkResponse
+    public class UpdateLogtankResponse : SdkResponse
     {
 
-        [JsonProperty("version", NullValueHandling = NullValueHandling.Ignore)]
-        public VersionItem Version { get; set; }
+        [JsonProperty("request_id", NullValueHandling = NullValueHandling.Ignore)]
+        public string RequestId { get; set; }
+
+        [JsonProperty("logtank", NullValueHandling = NullValueHandling.Ignore)]
+        public LogtankItem Logtank { get; set; }
 
 
 
@@ -27,8 +30,9 @@ namespace G42Cloud.SDK.Smn.V2.Model
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.Append("class ListVersionResponse {\n");
-            sb.Append("  version: ").Append(Version).Append("\n");
+            sb.Append("class UpdateLogtankResponse {\n");
+            sb.Append("  requestId: ").Append(RequestId).Append("\n");
+            sb.Append("  logtank: ").Append(Logtank).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -38,22 +42,27 @@ namespace G42Cloud.SDK.Smn.V2.Model
         /// </summary>
         public override bool Equals(object input)
         {
-            return this.Equals(input as ListVersionResponse);
+            return this.Equals(input as UpdateLogtankResponse);
         }
 
         /// <summary>
         /// Returns true if objects are equal
         /// </summary>
-        public bool Equals(ListVersionResponse input)
+        public bool Equals(UpdateLogtankResponse input)
         {
             if (input == null)
                 return false;
 
             return 
                 (
-                    this.Version == input.Version ||
-                    (this.Version != null &&
-                    this.Version.Equals(input.Version))
+                    this.RequestId == input.RequestId ||
+                    (this.RequestId != null &&
+                    this.RequestId.Equals(input.RequestId))
+                ) && 
+                (
+                    this.Logtank == input.Logtank ||
+                    (this.Logtank != null &&
+                    this.Logtank.Equals(input.Logtank))
                 );
         }
 
@@ -65,8 +74,10 @@ namespace G42Cloud.SDK.Smn.V2.Model
             unchecked // Overflow is fine, just wrap
             {
                 int hashCode = 41;
-                if (this.Version != null)
-                    hashCode = hashCode * 59 + this.Version.GetHashCode();
+                if (this.RequestId != null)
+                    hashCode = hashCode * 59 + this.RequestId.GetHashCode();
+                if (this.Logtank != null)
+                    hashCode = hashCode * 59 + this.Logtank.GetHashCode();
                 return hashCode;
             }
         }

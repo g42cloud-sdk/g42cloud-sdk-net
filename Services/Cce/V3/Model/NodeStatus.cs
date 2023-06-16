@@ -171,6 +171,9 @@ namespace G42Cloud.SDK.Cce.V3.Model
 
         [JsonProperty("phase", NullValueHandling = NullValueHandling.Ignore)]
         public PhaseEnum Phase { get; set; }
+        [JsonProperty("lastProbeTime", NullValueHandling = NullValueHandling.Ignore)]
+        public string LastProbeTime { get; set; }
+
         [JsonProperty("jobID", NullValueHandling = NullValueHandling.Ignore)]
         public string JobID { get; set; }
 
@@ -199,6 +202,7 @@ namespace G42Cloud.SDK.Cce.V3.Model
             var sb = new StringBuilder();
             sb.Append("class NodeStatus {\n");
             sb.Append("  phase: ").Append(Phase).Append("\n");
+            sb.Append("  lastProbeTime: ").Append(LastProbeTime).Append("\n");
             sb.Append("  jobID: ").Append(JobID).Append("\n");
             sb.Append("  serverId: ").Append(ServerId).Append("\n");
             sb.Append("  privateIP: ").Append(PrivateIP).Append("\n");
@@ -230,6 +234,11 @@ namespace G42Cloud.SDK.Cce.V3.Model
                     this.Phase == input.Phase ||
                     (this.Phase != null &&
                     this.Phase.Equals(input.Phase))
+                ) && 
+                (
+                    this.LastProbeTime == input.LastProbeTime ||
+                    (this.LastProbeTime != null &&
+                    this.LastProbeTime.Equals(input.LastProbeTime))
                 ) && 
                 (
                     this.JobID == input.JobID ||
@@ -273,6 +282,8 @@ namespace G42Cloud.SDK.Cce.V3.Model
                 int hashCode = 41;
                 if (this.Phase != null)
                     hashCode = hashCode * 59 + this.Phase.GetHashCode();
+                if (this.LastProbeTime != null)
+                    hashCode = hashCode * 59 + this.LastProbeTime.GetHashCode();
                 if (this.JobID != null)
                     hashCode = hashCode * 59 + this.JobID.GetHashCode();
                 if (this.ServerId != null)

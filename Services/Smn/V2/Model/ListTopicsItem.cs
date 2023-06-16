@@ -31,6 +31,9 @@ namespace G42Cloud.SDK.Smn.V2.Model
         [JsonProperty("enterprise_project_id", NullValueHandling = NullValueHandling.Ignore)]
         public string EnterpriseProjectId { get; set; }
 
+        [JsonProperty("topic_id", NullValueHandling = NullValueHandling.Ignore)]
+        public string TopicId { get; set; }
+
 
 
         /// <summary>
@@ -45,6 +48,7 @@ namespace G42Cloud.SDK.Smn.V2.Model
             sb.Append("  displayName: ").Append(DisplayName).Append("\n");
             sb.Append("  pushPolicy: ").Append(PushPolicy).Append("\n");
             sb.Append("  enterpriseProjectId: ").Append(EnterpriseProjectId).Append("\n");
+            sb.Append("  topicId: ").Append(TopicId).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -90,6 +94,11 @@ namespace G42Cloud.SDK.Smn.V2.Model
                     this.EnterpriseProjectId == input.EnterpriseProjectId ||
                     (this.EnterpriseProjectId != null &&
                     this.EnterpriseProjectId.Equals(input.EnterpriseProjectId))
+                ) && 
+                (
+                    this.TopicId == input.TopicId ||
+                    (this.TopicId != null &&
+                    this.TopicId.Equals(input.TopicId))
                 );
         }
 
@@ -111,6 +120,8 @@ namespace G42Cloud.SDK.Smn.V2.Model
                     hashCode = hashCode * 59 + this.PushPolicy.GetHashCode();
                 if (this.EnterpriseProjectId != null)
                     hashCode = hashCode * 59 + this.EnterpriseProjectId.GetHashCode();
+                if (this.TopicId != null)
+                    hashCode = hashCode * 59 + this.TopicId.GetHashCode();
                 return hashCode;
             }
         }

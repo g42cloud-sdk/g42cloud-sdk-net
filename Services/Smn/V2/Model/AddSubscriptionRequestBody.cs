@@ -25,6 +25,9 @@ namespace G42Cloud.SDK.Smn.V2.Model
         [JsonProperty("remark", NullValueHandling = NullValueHandling.Ignore)]
         public string Remark { get; set; }
 
+        [JsonProperty("extension", NullValueHandling = NullValueHandling.Ignore)]
+        public SubscriptionExtension Extension { get; set; }
+
 
 
         /// <summary>
@@ -37,6 +40,7 @@ namespace G42Cloud.SDK.Smn.V2.Model
             sb.Append("  protocol: ").Append(Protocol).Append("\n");
             sb.Append("  endpoint: ").Append(Endpoint).Append("\n");
             sb.Append("  remark: ").Append(Remark).Append("\n");
+            sb.Append("  extension: ").Append(Extension).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -72,6 +76,11 @@ namespace G42Cloud.SDK.Smn.V2.Model
                     this.Remark == input.Remark ||
                     (this.Remark != null &&
                     this.Remark.Equals(input.Remark))
+                ) && 
+                (
+                    this.Extension == input.Extension ||
+                    (this.Extension != null &&
+                    this.Extension.Equals(input.Extension))
                 );
         }
 
@@ -89,6 +98,8 @@ namespace G42Cloud.SDK.Smn.V2.Model
                     hashCode = hashCode * 59 + this.Endpoint.GetHashCode();
                 if (this.Remark != null)
                     hashCode = hashCode * 59 + this.Remark.GetHashCode();
+                if (this.Extension != null)
+                    hashCode = hashCode * 59 + this.Extension.GetHashCode();
                 return hashCode;
             }
         }

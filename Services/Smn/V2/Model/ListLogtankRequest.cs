@@ -11,13 +11,14 @@ using G42Cloud.SDK.Core;
 namespace G42Cloud.SDK.Smn.V2.Model
 {
     /// <summary>
-    /// Response Object
+    /// Request Object
     /// </summary>
-    public class ListVersionResponse : SdkResponse
+    public class ListLogtankRequest 
     {
 
-        [JsonProperty("version", NullValueHandling = NullValueHandling.Ignore)]
-        public VersionItem Version { get; set; }
+        [SDKProperty("topic_urn", IsPath = true)]
+        [JsonProperty("topic_urn", NullValueHandling = NullValueHandling.Ignore)]
+        public string TopicUrn { get; set; }
 
 
 
@@ -27,8 +28,8 @@ namespace G42Cloud.SDK.Smn.V2.Model
         public override string ToString()
         {
             var sb = new StringBuilder();
-            sb.Append("class ListVersionResponse {\n");
-            sb.Append("  version: ").Append(Version).Append("\n");
+            sb.Append("class ListLogtankRequest {\n");
+            sb.Append("  topicUrn: ").Append(TopicUrn).Append("\n");
             sb.Append("}\n");
             return sb.ToString();
         }
@@ -38,22 +39,22 @@ namespace G42Cloud.SDK.Smn.V2.Model
         /// </summary>
         public override bool Equals(object input)
         {
-            return this.Equals(input as ListVersionResponse);
+            return this.Equals(input as ListLogtankRequest);
         }
 
         /// <summary>
         /// Returns true if objects are equal
         /// </summary>
-        public bool Equals(ListVersionResponse input)
+        public bool Equals(ListLogtankRequest input)
         {
             if (input == null)
                 return false;
 
             return 
                 (
-                    this.Version == input.Version ||
-                    (this.Version != null &&
-                    this.Version.Equals(input.Version))
+                    this.TopicUrn == input.TopicUrn ||
+                    (this.TopicUrn != null &&
+                    this.TopicUrn.Equals(input.TopicUrn))
                 );
         }
 
@@ -65,8 +66,8 @@ namespace G42Cloud.SDK.Smn.V2.Model
             unchecked // Overflow is fine, just wrap
             {
                 int hashCode = 41;
-                if (this.Version != null)
-                    hashCode = hashCode * 59 + this.Version.GetHashCode();
+                if (this.TopicUrn != null)
+                    hashCode = hashCode * 59 + this.TopicUrn.GetHashCode();
                 return hashCode;
             }
         }
