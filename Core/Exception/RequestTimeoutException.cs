@@ -27,12 +27,12 @@ namespace G42Cloud.SDK.Core
     {
         public RequestTimeoutException(string errorMessage)
         {
-            this.ErrorMessage = errorMessage;
+            ErrorMessage = errorMessage;
         }
-        
+
         public RequestTimeoutException(string errorMessage, Exception innerException) : base(errorMessage, innerException)
         {
-            this.ErrorMessage = errorMessage;
+            ErrorMessage = errorMessage;
         }
     }
 }

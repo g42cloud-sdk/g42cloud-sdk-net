@@ -27,18 +27,18 @@ namespace G42Cloud.SDK.Core
     {
         protected SdkException()
         {
-            
         }
-        public string ErrorMessage { get; set; }
 
         public SdkException(string errorMessage) : base(errorMessage)
         {
-            this.ErrorMessage = errorMessage;
+            ErrorMessage = errorMessage;
         }
 
         public SdkException(string errorMessage, Exception innerException) : base(errorMessage, innerException)
         {
-            this.ErrorMessage = errorMessage;
+            ErrorMessage = errorMessage;
         }
+
+        public string ErrorMessage { get; set; }
     }
 }

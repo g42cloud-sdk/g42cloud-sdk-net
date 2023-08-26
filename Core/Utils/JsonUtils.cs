@@ -30,7 +30,7 @@ namespace G42Cloud.SDK.Core
 {
     public static class JsonUtils
     {
-        public static T DeSerialize<T>(HttpResponseMessage message)
+        public static T DeSerialize<T>(HttpResponseMessage message) where T : SdkResponse
         {
             if (typeof(T).IsSubclassOf(typeof(SdkStreamResponse)))
             {
@@ -38,56 +38,47 @@ namespace G42Cloud.SDK.Core
             }
 
             var body = Encoding.UTF8.GetString(message.Content.ReadAsByteArrayAsync().Result);
-            var jsonObject = SetResponseBody<T>(body);
+            var response = SetResponseBody<T>(body);
 
-            HttpUtils.SetAdditionalAttrs(message, jsonObject, body);
-            HttpUtils.SetResponseHeaders(message, jsonObject);
+            HttpUtils.SetAdditionalAttrs(message, response, body);
+            HttpUtils.SetResponseHeaders(message, response);
 
-            return jsonObject;
+            return response;
         }
 
-        private static T SetResponseBody<T>(string body)
+        private static T SetResponseBody<T>(string body) where T : SdkResponse
         {
-            var jsonObject = JsonConvert.DeserializeObject<T>(body, GetJsonSettings());
-
-            if (jsonObject == null)
-            {
-                jsonObject = Activator.CreateInstance<T>();
-            }
-
-            return jsonObject;
+            return string.IsNullOrEmpty(body) ? Activator.CreateInstance<T>() : JsonConvert.DeserializeObject<T>(body, GetJsonSettings());
         }
 
         public static T DeSerialize<T>(SdkResponse response) where T : SdkResponse
         {
-            var jsonObject = JsonConvert.DeserializeObject<T>(response.HttpBody, GetJsonSettings()) ??
-                             Activator.CreateInstance<T>();
-
-            jsonObject.HttpStatusCode = response.HttpStatusCode;
-            jsonObject.HttpHeaders = response.HttpHeaders;
-            jsonObject.HttpBody = response.HttpBody;
-            return jsonObject;
+            var tResponse = SetResponseBody<T>(response.HttpBody);
+            tResponse.HttpStatusCode = response.HttpStatusCode;
+            tResponse.HttpHeaders = response.HttpHeaders;
+            tResponse.HttpBody = response.HttpBody;
+            return tResponse;
         }
 
         public static T DeSerializeNull<T>(HttpResponseMessage message) where T : SdkResponse
         {
-            var t = Activator.CreateInstance<T>();
-            t.HttpStatusCode = (int) message.StatusCode;
-            t.HttpHeaders = message.Headers.ToString();
-            t.HttpBody = Encoding.UTF8.GetString(message.Content.ReadAsByteArrayAsync().Result);
-            return t;
+            var response = Activator.CreateInstance<T>();
+            response.HttpStatusCode = (int)message.StatusCode;
+            response.HttpHeaders = message.Headers.ToString();
+            response.HttpBody = Encoding.UTF8.GetString(message.Content.ReadAsByteArrayAsync().Result);
+            return response;
         }
 
         public static List<T> DeSerializeList<T>(HttpResponseMessage message)
         {
             var body = Encoding.UTF8.GetString(message.Content.ReadAsByteArrayAsync().Result);
-            return JArray.Parse(body).ToObject<List<T>>(JsonSerializer.CreateDefault(GetJsonSettings()));
+            return string.IsNullOrEmpty(body) ? new List<T>() : JArray.Parse(body).ToObject<List<T>>(JsonSerializer.CreateDefault(GetJsonSettings()));
         }
 
         public static Dictionary<TK, TV> DeSerializeMap<TK, TV>(HttpResponseMessage message)
         {
             var body = Encoding.UTF8.GetString(message.Content.ReadAsByteArrayAsync().Result);
-            return JObject.Parse(body).ToObject<Dictionary<TK, TV>>(JsonSerializer.CreateDefault(GetJsonSettings()));
+            return string.IsNullOrEmpty(body) ? new Dictionary<TK, TV>() : JObject.Parse(body).ToObject<Dictionary<TK, TV>>(JsonSerializer.CreateDefault(GetJsonSettings()));
         }
 
         public static string Serialize(object item)

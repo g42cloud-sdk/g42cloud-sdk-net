@@ -27,12 +27,12 @@ namespace G42Cloud.SDK.Core
     {
         public ConnectionException(string errorMessage)
         {
-            this.ErrorMessage = errorMessage;
+            ErrorMessage = errorMessage;
         }
 
         public ConnectionException(string errorMessage, Exception innerException) : base(errorMessage, innerException)
         {
-            this.ErrorMessage = errorMessage;
+            ErrorMessage = errorMessage;
         }
     }
 }

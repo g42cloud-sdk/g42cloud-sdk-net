@@ -23,9 +23,9 @@ namespace G42Cloud.SDK.Core
 {
     public class CallTimeoutException : RequestTimeoutException
     {
-        public CallTimeoutException(string errorMessage):base(errorMessage)
+        public CallTimeoutException(string errorMessage) : base(errorMessage)
         {
-            this.ErrorMessage = errorMessage;
+            ErrorMessage = errorMessage;
         }
     }
 }

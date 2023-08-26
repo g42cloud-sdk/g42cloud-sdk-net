@@ -45,6 +45,5 @@ namespace G42Cloud.SDK.Core
         {
             return _value.ToString();
         }
-
     }
 }
