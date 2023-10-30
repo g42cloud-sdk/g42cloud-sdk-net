@@ -22,76 +22,35 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace G42Cloud.SDK.Core.Auth
 {
-    public class BasicCredentials : Credentials
+    public class BasicCredentials : Credentials<BasicCredentials>
     {
-        private string _derivedAuthServiceName;
-        private string _regionId;
+
+        internal const string Type = "basic";
 
         public BasicCredentials(string ak, string sk, string projectId = null)
         {
-            if (string.IsNullOrEmpty(ak))
-            {
-                throw new ArgumentNullException(nameof(ak));
-            }
-
-            if (string.IsNullOrEmpty(sk))
-            {
-                throw new ArgumentNullException(nameof(sk));
-            }
-
             Ak = ak;
             Sk = sk;
             ProjectId = projectId;
         }
 
-        private string Ak { set; get; }
-        private string Sk { set; get; }
         private string ProjectId { set; get; }
-        private string SecurityToken { set; get; }
-        private string IamEndpoint { set; get; }
-        private Func<HttpRequest, bool> DerivedPredicate { set; get; }
 
-        public BasicCredentials WithIamEndpoint(string endpoint)
-        {
-            IamEndpoint = endpoint;
-            return this;
-        }
-
-        public BasicCredentials WithSecurityToken(string token)
-        {
-            SecurityToken = token;
-            return this;
-        }
-
-        public BasicCredentials WithDerivedPredicate(Func<HttpRequest, bool> func)
-        {
-            DerivedPredicate = func;
-            return this;
-        }
-
-        protected bool IsDerivedAuth(HttpRequest httpRequest)
-        {
-            if (DerivedPredicate == null)
-            {
-                return false;
-            }
-
-            return DerivedPredicate(httpRequest);
-        }
 
         public override void ProcessDerivedAuthParams(string derivedAuthServiceName, string regionId)
         {
-            if (_derivedAuthServiceName == null)
+            if (DerivedAuthServiceName == null)
             {
-                _derivedAuthServiceName = derivedAuthServiceName;
+                DerivedAuthServiceName = derivedAuthServiceName;
             }
 
-            if (_regionId == null)
+            if (RegionId == null)
             {
-                _regionId = regionId;
+                RegionId = regionId;
             }
         }
 
@@ -120,37 +79,21 @@ namespace G42Cloud.SDK.Core.Auth
                     request.Headers.Add("X-Security-Token", SecurityToken);
                 }
 
-                if (!string.IsNullOrEmpty(request.ContentType) && !request.ContentType.Contains("application/json"))
-                {
-                    request.Headers.Add("X-Sdk-Content-Sha256", "UNSIGNED-PAYLOAD");
-                }
-
                 if (IsDerivedAuth(request))
                 {
-                    var signer = new DerivedSigner
-                    {
-                        Key = Ak,
-                        Secret = Sk
-                    };
-                    signer.Sign(request, _regionId, _derivedAuthServiceName);
-                }
-                else
-                {
-                    var signer = new Signer
-                    {
-                        Key = Ak,
-                        Secret = Sk
-                    };
-                    signer.Sign(request);
+                    DerivedSigner.GetInstance().Sign(request, this);
+                    return request;
                 }
 
+                IAkSkSigner signer = AkSkSignerFactory.GetSigner(request.SigningAlgorithm);
+                signer.Sign(request, this);
                 return request;
             });
 
             return httpRequestTask;
         }
 
-        public override Credentials ProcessAuthParams(SdkHttpClient client, string regionId)
+        public override ICredential ProcessAuthParams(SdkHttpClient client, string regionId)
         {
             if (ProjectId != null)
             {
@@ -158,10 +101,9 @@ namespace G42Cloud.SDK.Core.Auth
             }
 
             var akWithName = Ak + regionId;
-            var projectId = AuthCache.GetAuth(akWithName);
-            if (!string.IsNullOrEmpty(projectId))
+            if (AuthCache.Value.ContainsKey(akWithName))
             {
-                ProjectId = projectId;
+                ProjectId = AuthCache.Value[akWithName];
                 return this;
             }
 
@@ -169,12 +111,16 @@ namespace G42Cloud.SDK.Core.Auth
             DerivedPredicate = null;
 
             IamEndpoint = string.IsNullOrEmpty(IamEndpoint) ? IamService.DefaultIamEndpoint : IamEndpoint;
-            var request = IamService.GetKeystoneListProjectsRequest(IamEndpoint, regionId);
+            var logger = client.GetLogger();
+            logger.LogInformation("Project id of region '{}' not found in BasicCredentials, trying to obtain project id from IAM service: {}",
+                regionId, IamEndpoint);
+            var request = IamService.GetKeystoneListProjectsRequest(IamEndpoint, regionId, client.GetHttpConfig());
             request = SignAuthRequest(request).Result;
             try
             {
                 ProjectId = IamService.KeystoneListProjects(client, request);
-                AuthCache.PutAuth(akWithName, ProjectId);
+                logger.LogInformation("Success to obtain project id of region '{}': {}", regionId, ProjectId);
+                AuthCache.Value[akWithName] = ProjectId;
                 DerivedPredicate = derivedFunc;
                 return this;
             }

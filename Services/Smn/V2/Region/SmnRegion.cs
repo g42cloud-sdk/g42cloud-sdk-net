@@ -9,6 +9,8 @@ namespace G42Cloud.SDK.Smn.V2
         public static readonly Region AE_AD_1 = new Region("ae-ad-1",
             "https://smn.ae-ad-1.g42cloud.com");
         
+        private static readonly IRegionProvider Provider = RegionProviderChain.GetDefault("SMN");
+
         private static readonly Dictionary<string, Region> StaticFields = new Dictionary<string, Region>()
         {
                 { "ae-ad-1", AE_AD_1 },
@@ -19,6 +21,12 @@ namespace G42Cloud.SDK.Smn.V2
             if (string.IsNullOrEmpty(regionId))
             {
                 throw new ArgumentNullException(regionId);
+            }
+
+            var region = Provider.GetRegion(regionId);
+            if (region != null)
+            {
+                return region;
             }
 
             if (StaticFields.ContainsKey(regionId))

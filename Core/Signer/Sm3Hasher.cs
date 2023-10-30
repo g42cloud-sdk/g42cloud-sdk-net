@@ -1,6 +1,6 @@
 ﻿/*
  * Copyright 2023 G42 Technologies Co.,Ltd.
- *
+ * 
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -19,12 +19,31 @@
  * under the License.
  */
 
+using Org.BouncyCastle.Crypto.Digests;
+using Org.BouncyCastle.Crypto.Macs;
+using Org.BouncyCastle.Crypto.Parameters;
+
 namespace G42Cloud.SDK.Core
 {
-    public static class Constants
+    internal class Sm3Hasher : AbstractHasher
     {
-        public const long DefaultProgressInterval = 102400;
-        public const string DefaultProfileDirName = ".g42cloud";
-        public const SigningAlgorithm DefaultSigningAlgorithm = SigningAlgorithm.HmacSha256;
+        internal override byte[] Hash(byte[] data)
+        {
+            var digest = new SM3Digest();
+            var hash = new byte[digest.GetDigestSize()];
+            digest.BlockUpdate(data, 0, data.Length);
+            digest.DoFinal(hash, 0);
+            return hash;
+        }
+
+        internal override byte[] Hmac(byte[] data, byte[] key)
+        {
+            HMac hmac = new HMac(new SM3Digest());
+            hmac.Init(new KeyParameter(key));
+            byte[] output = new byte[hmac.GetMacSize()];
+            hmac.BlockUpdate(data, 0, data.Length);
+            hmac.DoFinal(output, 0);
+            return output;
+        }
     }
 }

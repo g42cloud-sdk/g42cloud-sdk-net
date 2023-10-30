@@ -19,11 +19,6 @@ namespace G42Cloud.SDK.Mpc.V1.Model
         public class TypeEnum
         {
             /// <summary>
-            /// Enum PERCENT for value: PERCENT
-            /// </summary>
-            public static readonly TypeEnum PERCENT = new TypeEnum("PERCENT");
-
-            /// <summary>
             /// Enum TIME for value: TIME
             /// </summary>
             public static readonly TypeEnum TIME = new TypeEnum("TIME");
@@ -41,7 +36,6 @@ namespace G42Cloud.SDK.Mpc.V1.Model
             private static readonly Dictionary<string, TypeEnum> StaticFields =
             new Dictionary<string, TypeEnum>()
             {
-                { "PERCENT", PERCENT },
                 { "TIME", TIME },
                 { "DOTS", DOTS },
                 { "DOTS_MS", DOTS_MS },

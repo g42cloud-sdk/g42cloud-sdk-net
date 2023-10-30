@@ -1,6 +1,6 @@
-/*
- * Copyright 2020 G42 Technologies Co.,Ltd.
- *
+﻿/*
+ * Copyright 2023 G42 Technologies Co.,Ltd.
+ * 
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -19,12 +19,12 @@
  * under the License.
  */
 
-using System.Collections.Concurrent;
+using G42Cloud.SDK.Core.Auth;
 
-namespace G42Cloud.SDK.Core.Auth
+namespace G42Cloud.SDK.Core
 {
-    internal static class AuthCache
+    internal interface IAkSkSigner
     {
-        internal static readonly ConcurrentDictionary<string, string> Value = new ConcurrentDictionary<string, string>();
+        void Sign<T>(HttpRequest request, T credentials) where T : Credentials<T>;
     }
 }

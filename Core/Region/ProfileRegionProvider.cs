@@ -1,5 +1,5 @@
-/*
- * Copyright 2020 G42 Technologies Co.,Ltd.
+﻿/*
+ * Copyright 2023 G42 Technologies Co.,Ltd.
  *
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -19,12 +19,20 @@
  * under the License.
  */
 
-using System.Collections.Concurrent;
-
-namespace G42Cloud.SDK.Core.Auth
+namespace G42Cloud.SDK.Core
 {
-    internal static class AuthCache
+    public class ProfileRegionProvider : IRegionProvider
     {
-        internal static readonly ConcurrentDictionary<string, string> Value = new ConcurrentDictionary<string, string>();
+        private readonly string _serviceName;
+
+        public ProfileRegionProvider(string serviceName)
+        {
+            _serviceName = serviceName.ToUpper();
+        }
+
+        public Region GetRegion(string regionId)
+        {
+            return ProfileRegionCache.GetInstance().TryGetValue(_serviceName + regionId, out var region) ? region : null;
+        }
     }
 }

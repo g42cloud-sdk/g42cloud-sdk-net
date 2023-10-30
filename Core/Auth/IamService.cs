@@ -21,6 +21,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Net;
 using Newtonsoft.Json;
 
 namespace G42Cloud.SDK.Core.Auth
@@ -61,7 +63,17 @@ namespace G42Cloud.SDK.Core.Auth
         private const string KeystoneListProjectsUri = "/v3/projects";
         private const string KeystoneListAuthDomainsUri = "/v3/auth/domains";
 
-        public static HttpRequest GetKeystoneListProjectsRequest(string iamEndpoint, string regionId)
+        private const string NoProjectIdFound = @"no project id found, please select one of the following solutions:
+  1. Manually specify project_id when initializing the credentials, var credentials = new BasicCredentials(ak, sk, projectId);
+  2. Use the domain account to grant IAM read permission to the current account
+  3. Replace the ak/sk of the IAM account with the ak/sk of the domain account";
+
+        private const string NoDomainIdFound = @"no domain id found, please select one of the following solutions:
+  1. Manually specify domainId when initializing the credentials, var credentials = new GlobalCredentials(ak, sk, domainId);
+  2. Use the domain account to grant IAM read permission to the current account
+  3. Replace the ak/sk of the IAM account with the ak/sk of the domain account";
+
+        public static HttpRequest GetKeystoneListProjectsRequest(string iamEndpoint, string regionId, HttpConfig httpConfig)
         {
             var urlParam = new Dictionary<string, string>();
             var urlPath = HttpUtils.AddUrlPath(KeystoneListProjectsUri, urlParam);
@@ -71,7 +83,14 @@ namespace G42Cloud.SDK.Core.Auth
 
             var request = new HttpRequest("GET", sdkRequest.ContentType, new Uri(url))
             {
-                Body = ""
+                Body = "",
+                Headers = new WebHeaderCollection
+                {
+                    {
+                        "User-Agent", "g42cloud-usdk-net/3.0"
+                    }
+                },
+                SigningAlgorithm = httpConfig.SigningAlgorithm
             };
 
             return request;
@@ -92,16 +111,15 @@ namespace G42Cloud.SDK.Core.Auth
                 // TODO support create new project id here
                 if (data?.Projects == null || data.Projects?.Count == 0)
                 {
-                    throw new ArgumentException("No project id found, please specify project_id manually when initializing the credentials.");
+                    throw new ArgumentException(NoProjectIdFound);
                 }
-
-                if (data.Projects.Count == 1)
+                if (data.Projects?.Count > 1)
                 {
-                    return data.Projects[0].Id;
+                    var projectIds = string.Join(",", data.Projects.Select(project => project.Id).ToList());
+                    throw new ArgumentException($"Multiple project ids found: {projectIds}, please specify one when initializing the credentials");
                 }
 
-                throw new ArgumentException(
-                    "Multiple project ids have been returned, please specify one when initializing the credentials.");
+                return data.Projects?[0].Id;
             }
             catch (AggregateException aggregateException)
             {
@@ -109,7 +127,7 @@ namespace G42Cloud.SDK.Core.Auth
             }
         }
 
-        public static HttpRequest GetKeystoneListAuthDomainsRequest(string iamEndpoint)
+        public static HttpRequest GetKeystoneListAuthDomainsRequest(string iamEndpoint, HttpConfig httpConfig)
         {
             var urlParam = new Dictionary<string, string>();
             var urlPath = HttpUtils.AddUrlPath(KeystoneListAuthDomainsUri, urlParam);
@@ -118,7 +136,14 @@ namespace G42Cloud.SDK.Core.Auth
             var url = iamEndpoint + urlPath;
             var request = new HttpRequest("GET", sdkRequest.ContentType, new Uri(url))
             {
-                Body = ""
+                Body = "",
+                Headers = new WebHeaderCollection
+                {
+                    {
+                        "User-Agent", "g42cloud-usdk-net/3.0"
+                    }
+                },
+                SigningAlgorithm = httpConfig.SigningAlgorithm
             };
 
             return request;
@@ -141,10 +166,7 @@ namespace G42Cloud.SDK.Core.Auth
                     return data.Domains[0].Id;
                 }
 
-                throw new ArgumentException("No domain id found, please select one of the following solutions:\n\t" +
-                                            "1. Manually specify domain_id when initializing the credentials.\n\t" +
-                                            "2. Use the domain account to grant the current account permissions of the IAM service.\n\t" +
-                                            "3. Use AK/SK of the domain account.");
+                throw new ArgumentException(NoDomainIdFound);
             }
             catch (AggregateException aggregateException)
             {

@@ -22,81 +22,34 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace G42Cloud.SDK.Core.Auth
 {
-    public class GlobalCredentials : Credentials
+    public class GlobalCredentials : Credentials<GlobalCredentials>
     {
-        private string _derivedAuthServiceName;
-        private string _regionId;
 
+        internal const string Type = "global";
 
         public GlobalCredentials(string ak, string sk, string domainId = null)
         {
-            if (string.IsNullOrEmpty(ak))
-            {
-                throw new ArgumentNullException(nameof(ak));
-            }
-
-            if (string.IsNullOrEmpty(sk))
-            {
-                throw new ArgumentNullException(nameof(sk));
-            }
-
             Ak = ak;
             Sk = sk;
             DomainId = domainId;
         }
 
-        private string Ak { set; get; }
-        private string Sk { set; get; }
         private string DomainId { set; get; }
-        private string SecurityToken { set; get; }
-        private string IamEndpoint { set; get; }
-        private Func<HttpRequest, bool> DerivedPredicate { set; get; }
-
-        public GlobalCredentials WithIamEndpoint(string endpoint)
-        {
-            IamEndpoint = endpoint;
-            return this;
-        }
-
-        public GlobalCredentials WithSecurityToken(string token)
-        {
-            SecurityToken = token;
-            return this;
-        }
-
-        /**
-         * @param derivedPredicate optional property, judge whether to use the DerivedAKSKSigner
-         * @return DerivedT with derived set
-         */
-        public GlobalCredentials WithDerivedPredicate(Func<HttpRequest, bool> func)
-        {
-            DerivedPredicate = func;
-            return this;
-        }
-
-        protected bool IsDerivedAuth(HttpRequest httpRequest)
-        {
-            if (DerivedPredicate == null)
-            {
-                return false;
-            }
-
-            return DerivedPredicate(httpRequest);
-        }
 
         public override void ProcessDerivedAuthParams(string derivedAuthServiceName, string regionId)
         {
-            if (_derivedAuthServiceName == null)
+            if (DerivedAuthServiceName == null)
             {
-                _derivedAuthServiceName = derivedAuthServiceName;
+                DerivedAuthServiceName = derivedAuthServiceName;
             }
 
-            if (_regionId == null)
+            if (RegionId == null)
             {
-                _regionId = regionId;
+                RegionId = "globe";
             }
         }
 
@@ -126,47 +79,30 @@ namespace G42Cloud.SDK.Core.Auth
                     request.Headers.Add("X-Security-Token", SecurityToken);
                 }
 
-                if (!string.IsNullOrEmpty(request.ContentType) && !request.ContentType.Contains("application/json"))
-                {
-                    request.Headers.Add("X-Sdk-Content-Sha256", "UNSIGNED-PAYLOAD");
-                }
-
                 if (IsDerivedAuth(request))
                 {
-                    var signer = new DerivedSigner
-                    {
-                        Key = Ak,
-                        Secret = Sk
-                    };
-                    signer.Sign(request, _regionId, _derivedAuthServiceName);
-                }
-                else
-                {
-                    var signer = new Signer
-                    {
-                        Key = Ak,
-                        Secret = Sk
-                    };
-                    signer.Sign(request);
+                    DerivedSigner.GetInstance().Sign(request, this);
+                    return request;
                 }
 
+                IAkSkSigner signer = AkSkSignerFactory.GetSigner(request.SigningAlgorithm);
+                signer.Sign(request, this);
                 return request;
             });
 
             return httpRequestTask;
         }
 
-        public override Credentials ProcessAuthParams(SdkHttpClient client, string regionId)
+        public override ICredential ProcessAuthParams(SdkHttpClient client, string regionId)
         {
             if (DomainId != null)
             {
                 return this;
             }
 
-            var domainId = AuthCache.GetAuth(Ak);
-            if (!string.IsNullOrEmpty(domainId))
+            if (AuthCache.Value.ContainsKey(Ak))
             {
-                DomainId = domainId;
+                DomainId = AuthCache.Value[Ak];
                 return this;
             }
 
@@ -174,12 +110,15 @@ namespace G42Cloud.SDK.Core.Auth
             DerivedPredicate = null;
 
             IamEndpoint = string.IsNullOrEmpty(IamEndpoint) ? IamService.DefaultIamEndpoint : IamEndpoint;
-            var request = IamService.GetKeystoneListAuthDomainsRequest(IamEndpoint);
+            var logger = client.GetLogger();
+            logger.LogInformation("Domain id not found in BasicCredentials, trying to obtain domain id from IAM service: {}", IamEndpoint);
+            var request = IamService.GetKeystoneListAuthDomainsRequest(IamEndpoint, client.GetHttpConfig());
             request = SignAuthRequest(request).Result;
             try
             {
                 DomainId = IamService.KeystoneListAuthDomains(client, request);
-                AuthCache.PutAuth(Ak, DomainId);
+                logger.LogInformation("Success to obtain domain id: {}", DomainId);
+                AuthCache.Value[Ak] = DomainId;
                 DerivedPredicate = derivedFunc;
                 return this;
             }

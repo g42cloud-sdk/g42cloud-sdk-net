@@ -1,6 +1,6 @@
-/*
- * Copyright 2020 G42 Technologies Co.,Ltd.
- *
+﻿/*
+ * Copyright 2023 G42 Technologies Co.,Ltd.
+ * 
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -19,12 +19,19 @@
  * under the License.
  */
 
-using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace G42Cloud.SDK.Core.Auth
 {
-    internal static class AuthCache
+    public interface ICredential
     {
-        internal static readonly ConcurrentDictionary<string, string> Value = new ConcurrentDictionary<string, string>();
+        Dictionary<string, string> GetPathParamDictionary();
+
+        Task<HttpRequest> SignAuthRequest(HttpRequest request);
+
+        ICredential ProcessAuthParams(SdkHttpClient client, string regionId);
+
+        void ProcessDerivedAuthParams(string derivedAuthServiceName, string regionId);
     }
 }

@@ -1,6 +1,6 @@
-/*
- * Copyright 2020 G42 Technologies Co.,Ltd.
- *
+﻿/*
+ * Copyright 2023 G42 Technologies Co.,Ltd.
+ * 
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -19,12 +19,25 @@
  * under the License.
  */
 
-using System.Collections.Concurrent;
-
-namespace G42Cloud.SDK.Core.Auth
+namespace G42Cloud.SDK.Core
 {
-    internal static class AuthCache
+    internal static class AkSkSignerFactory
     {
-        internal static readonly ConcurrentDictionary<string, string> Value = new ConcurrentDictionary<string, string>();
+        internal static IAkSkSigner GetSigner(SigningAlgorithm algorithm)
+        {
+            switch (algorithm)
+            {
+                case SigningAlgorithm.HmacSha256:
+                    return Signer.GetInstance();
+                case SigningAlgorithm.HmacSm3:
+                    return Sm3Signer.GetInstance();
+                case SigningAlgorithm.EcdsaP256Sha256:
+                    return P256Sha256Signer.GetInstance();
+                case SigningAlgorithm.Sm2Sm3:
+                    return Sm2Sm3Signer.GetInstance();
+                default:
+                    throw new SdkException("unsupported signing algorithm: " + algorithm);
+            }
+        }
     }
 }

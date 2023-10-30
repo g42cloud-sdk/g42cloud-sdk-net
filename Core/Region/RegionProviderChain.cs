@@ -19,12 +19,33 @@
  * under the License.
  */
 
+using System.Linq;
+
 namespace G42Cloud.SDK.Core
 {
-    public static class Constants
+    public class RegionProviderChain : IRegionProvider
     {
-        public const long DefaultProgressInterval = 102400;
-        public const string DefaultProfileDirName = ".g42cloud";
-        public const SigningAlgorithm DefaultSigningAlgorithm = SigningAlgorithm.HmacSha256;
+
+        private readonly IRegionProvider[] _providers;
+
+        public RegionProviderChain(IRegionProvider[] providers)
+        {
+            _providers = providers;
+        }
+
+        public static RegionProviderChain GetDefault(string serviceName)
+        {
+            var providers = new IRegionProvider[]
+            {
+                new EnvRegionProvider(serviceName),
+                new ProfileRegionProvider(serviceName)
+            };
+            return new RegionProviderChain(providers);
+        }
+
+        public Region GetRegion(string regionId)
+        {
+            return _providers.Select(provider => provider.GetRegion(regionId)).FirstOrDefault(region => region != null);
+        }
     }
 }

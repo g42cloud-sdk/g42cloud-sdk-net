@@ -1,6 +1,6 @@
-/*
- * Copyright 2020 G42 Technologies Co.,Ltd.
- *
+﻿/*
+ * Copyright 2023 G42 Technologies Co.,Ltd.
+ * 
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
@@ -19,12 +19,26 @@
  * under the License.
  */
 
-using System.Collections.Concurrent;
+using System.Security.Cryptography;
 
-namespace G42Cloud.SDK.Core.Auth
+namespace G42Cloud.SDK.Core
 {
-    internal static class AuthCache
+    internal class Sha256Hasher: AbstractHasher
     {
-        internal static readonly ConcurrentDictionary<string, string> Value = new ConcurrentDictionary<string, string>();
+        internal override byte[] Hash(byte[] data)
+        {
+            SHA256 sha256 = new SHA256Managed();
+            var bytes = sha256.ComputeHash(data);
+            sha256.Clear();
+            return bytes;
+        }
+
+        internal override byte[] Hmac(byte[] data, byte[] key)
+        {
+            using (var hMacSha256 = new HMACSHA256(key))
+            {
+                return hMacSha256.ComputeHash(data);
+            }
+        }
     }
 }
